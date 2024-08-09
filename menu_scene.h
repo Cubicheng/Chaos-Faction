@@ -6,9 +6,10 @@
 # include "animation.h"
 # include "camera.h"
 # include "timer.h"
+# include "resource.h"
+
 # include <iostream>
 
-extern IMAGE img_menu_background;
 extern SceneManager scene_manager;
 
 
@@ -31,7 +32,7 @@ public:
 	}
 
 	void on_draw(const Camera & camera) {
-		putimage(0, 0, &img_menu_background);
+		putimage(0, 0, &rs::img_menu_background);
 	}
 
 	void on_input(const ExMessage& msg) {

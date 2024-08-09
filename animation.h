@@ -1,6 +1,7 @@
 #pragma once
 
 # include "atlas.h"
+# include "camera.h"
 # include <functional>
 
 class Animation {
@@ -24,7 +25,7 @@ public:
 
 	void on_update(int delta);
 
-	void on_draw(int x, int y)const;
+	void on_draw(const Camera& camera, int x, int y)const;
 
 	void set_callback(std::function<void()> callback);
 
