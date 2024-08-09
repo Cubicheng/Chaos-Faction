@@ -24,7 +24,7 @@ public:
 		std::cout << "game scene running" << std::endl;
 	}
 
-	void on_draw() {
+	void on_draw(const Camera& camera) {
 		outtextxy(10, 10, _T("game scene on drawing"));
 	}
 

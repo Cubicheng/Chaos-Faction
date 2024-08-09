@@ -163,12 +163,21 @@ void load_game_resources() {
 	mciSendString(_T("open resources/pea_shoot_1.mp3 alias pea_shoot_1"), NULL, 8, NULL);
 	mciSendString(_T("open resources/pea_shoot_2.mp3 alias pea_shoot_2"), NULL, 0, NULL);
 	mciSendString(_T("open resources/pea_shoot_ex.mp3 alias pea_shoot_ex"), NULL, 0, NULL);
+	mciSendString(_T("open resources/sun_explode.mp3 alias sun_explode"), NULL, 0, NULL);
+	mciSendString(_T("open resources/sun_explode_ex.mp3 alias sun_explode_ex"), NULL, 0, NULL);
+	mciSendString(_T("open resources/pea_shoot_ex.mp3 alias pea_shoot_ex"), NULL, 0, NULL);
+	mciSendString(_T("open resources/sun_text.mp3 alias sun_text"), NULL, 0, NULL);
+	mciSendString(_T("open resources/ui_confirm.wav alias ui_confirm"), NULL, 0, NULL);
+	mciSendString(_T("open resources/ui_switch.wav alias ui_switch"), NULL, 0, NULL);
+	mciSendString(_T("open resources/ui_win.wav alias ui_win"), NULL, 0, NULL);
 }
 
 Scene* menu_scene = nullptr;
 Scene* game_scene = nullptr;
 Scene* selector_scene = nullptr;
 SceneManager scene_manager;
+
+Camera main_camera;
 
 void init() {
 	menu_scene = new MenuScene();
@@ -205,7 +214,7 @@ void loop() {
 
 		cleardevice();
 
-		scene_manager.on_draw();
+		scene_manager.on_draw(main_camera);
 
 		FlushBatchDraw();
 
