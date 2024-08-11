@@ -7,9 +7,14 @@
 # include "util.h"
 # include "atlas.h"
 # include "resource.h"
+# include "player.h"
 
 #pragma comment(lib,"Winmm.lib")
 
+bool is_debug = true;
+
+Player* player_1 = nullptr;
+Player* player_2 = nullptr;
 
 Scene* menu_scene = nullptr;
 Scene* game_scene = nullptr;

@@ -44,5 +44,10 @@ namespace ut {
 		AlphaBlend(GetImageHDC(GetWorkingImage()), (int)(dst_x - pos_camera.x), (int)(dst_y - pos_camera.y), w, h,
 			GetImageHDC(img), 0, 0, w, h, { AC_SRC_OVER,0,255,AC_SRC_ALPHA });
 	}
+
+	inline void draw_line(const Camera& camera, int x1, int y1, int x2, int y2) {
+		const Vector2& pos_camera = camera.get_position();
+		line(x1 - pos_camera.x, y1 - pos_camera.y, x2 - pos_camera.x, y2 - pos_camera.y);
+	}
 }
 
