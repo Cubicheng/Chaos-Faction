@@ -95,10 +95,20 @@ namespace rs {
 		ut::flip_image(&img_gravestone_right, &img_gravestone_left);
 		loadimage(&img_selector_tip, _T("resources/selector_tip.png"));
 		loadimage(&img_selector_background, _T("resources/selector_background.png"));
+		
 		loadimage(&img_1P_selector_btn_idle_right, _T("resources/1p_selector_btn_idle.png"));
 		ut::flip_image(&img_1P_selector_btn_idle_right, &img_1P_selector_btn_idle_left);
 		loadimage(&img_1P_selector_btn_down_right, _T("resources/1p_selector_btn_down.png"));
 		ut::flip_image(&img_1P_selector_btn_down_right, &img_1P_selector_btn_down_left);
+		
+		loadimage(&img_2P_selector_btn_idle_right, _T("resources/2p_selector_btn_idle.png"));
+		ut::flip_image(&img_2P_selector_btn_idle_right, &img_2P_selector_btn_idle_left);
+		loadimage(&img_2P_selector_btn_down_right, _T("resources/2p_selector_btn_down.png"));
+		ut::flip_image(&img_2P_selector_btn_down_right, &img_2P_selector_btn_down_left);
+
+		
+		
+		
 		loadimage(&img_peashooter_selector_background_right, _T("resources/peashooter_selector_background.png"));
 		ut::flip_image(&img_peashooter_selector_background_right, &img_peashooter_selector_background_left);
 		loadimage(&img_sunflower_selector_background_right, _T("resources/sunflower_selector_background.png"));

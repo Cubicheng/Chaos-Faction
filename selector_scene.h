@@ -159,6 +159,18 @@ public:
 			break;
 		}
 
+		ut::putimage_alpha(pos_img_1P_selector_btn_left.x, pos_img_1P_selector_btn_left.y,
+			is_btn_1P_left_down ? &rs::img_1P_selector_btn_down_left : &rs::img_1P_selector_btn_idle_left);
+
+		ut::putimage_alpha(pos_img_1P_selector_btn_right.x, pos_img_1P_selector_btn_right.y,
+			is_btn_1P_right_down ? &rs::img_1P_selector_btn_down_right : &rs::img_1P_selector_btn_idle_right);
+
+		ut::putimage_alpha(pos_img_2P_selector_btn_left.x, pos_img_2P_selector_btn_left.y,
+			is_btn_2P_left_down ? &rs::img_2P_selector_btn_down_left : &rs::img_2P_selector_btn_idle_left);
+
+		ut::putimage_alpha(pos_img_2P_selector_btn_right.x, pos_img_2P_selector_btn_right.y,
+			is_btn_2P_right_down ? &rs::img_2P_selector_btn_down_right : &rs::img_2P_selector_btn_idle_right);
+
 
 		ut::putimage_alpha(pos_img_1P_desc.x, pos_img_1P_desc.y, &rs::img_1P_desc);
 		ut::putimage_alpha(pos_img_2P_desc.x, pos_img_2P_desc.y, &rs::img_2P_desc);
@@ -168,7 +180,46 @@ public:
 	}
 
 	void on_input(const ExMessage& msg) {
-
+		if (msg.message == WM_KEYDOWN) {
+			switch (msg.vkcode) {
+			case 0x41:
+				is_btn_1P_left_down = true;
+				break;
+			case 0x44:
+				is_btn_1P_right_down = true;
+				break;
+			case VK_LEFT:
+				is_btn_2P_left_down = true;
+				break;
+			case VK_RIGHT:
+				is_btn_2P_right_down = true;
+				break;
+			}
+		}
+		else if(msg.message == WM_KEYUP){
+			switch (msg.vkcode) {
+			case 0x41:
+				is_btn_1P_left_down = false;
+				player_type_1 = (PlayerType)((PlayerType::Invalid + player_type_1 - 1) % PlayerType::Invalid);
+				break;
+			case 0x44:
+				is_btn_1P_right_down = false;
+				player_type_1 = (PlayerType)((player_type_1 + 1) % PlayerType::Invalid);
+				break;
+			case VK_LEFT:
+				is_btn_2P_left_down = false;
+				player_type_2 = (PlayerType)((PlayerType::Invalid + player_type_2 - 1) % PlayerType::Invalid);
+				break;
+			case VK_RIGHT:
+				is_btn_2P_right_down = false;
+				player_type_2 = (PlayerType)((player_type_2 + 1) % PlayerType::Invalid);
+				break;
+			case VK_RETURN:
+				scene_manager.switch_to(SceneManager::SceneType::Game);
+				break;
+			}
+			mciSendString(_T("play ui_switch from 0"), NULL, 0, NULL);
+		}
 	}
 
 	void on_exit() {
@@ -220,4 +271,9 @@ private:
 	LPCTSTR str_sunflower_name = _T("ÁúÈÕ¿û");
 
 	int selector_background_scroll_offset_x = 0;
+
+	bool is_btn_1P_left_down = false;
+	bool is_btn_1P_right_down = false;
+	bool is_btn_2P_left_down = false;
+	bool is_btn_2P_right_down = false;
 };
