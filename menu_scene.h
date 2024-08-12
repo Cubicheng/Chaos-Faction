@@ -24,7 +24,7 @@ public:
 	}
 
 	void on_enter() {
-		mciSendString(_T("play bgm_menu repeat from 0"),NULL,0,NULL);
+		mciSendString(_T("play bgm_menu repeat from 0"), NULL, 0, NULL);
 	}
 
 	void on_update(int delta) {

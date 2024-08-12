@@ -206,24 +206,29 @@ public:
 			case 0x41:
 				is_btn_1P_left_down = false;
 				player_type_1 = (PlayerType)((PlayerType::Invalid + player_type_1 - 1) % PlayerType::Invalid);
+				mciSendString(_T("play ui_switch from 0"), NULL, 0, NULL);
 				break;
 			case 0x44:
 				is_btn_1P_right_down = false;
 				player_type_1 = (PlayerType)((player_type_1 + 1) % PlayerType::Invalid);
+				mciSendString(_T("play ui_switch from 0"), NULL, 0, NULL);
 				break;
 			case VK_LEFT:
 				is_btn_2P_left_down = false;
 				player_type_2 = (PlayerType)((PlayerType::Invalid + player_type_2 - 1) % PlayerType::Invalid);
+				mciSendString(_T("play ui_switch from 0"), NULL, 0, NULL);
 				break;
 			case VK_RIGHT:
 				is_btn_2P_right_down = false;
 				player_type_2 = (PlayerType)((player_type_2 + 1) % PlayerType::Invalid);
+				mciSendString(_T("play ui_switch from 0"), NULL, 0, NULL);
 				break;
 			case VK_RETURN:
 				scene_manager.switch_to(SceneManager::SceneType::Game);
+				mciSendString(_T("play ui_switch from 0"), NULL, 0, NULL);
 				break;
 			}
-			mciSendString(_T("play ui_switch from 0"), NULL, 0, NULL);
+			
 		}
 	}
 
@@ -237,7 +242,7 @@ public:
 			break;
 		}
 
-		player_1->set_id(Player::PlayerID::P1);
+		player_1->set_id(PlayerID::P1);
 
 		switch (player_type_2) {
 		case PlayerType::Peashooter:
@@ -248,7 +253,7 @@ public:
 			break;
 		}
 
-		player_2->set_id(Player::PlayerID::P2);
+		player_2->set_id(PlayerID::P2);
 	}
 
 	void outtextxy_shaded(int x, int y, LPCTSTR str) {

@@ -141,7 +141,7 @@ namespace rs {
 		ut::flip_atlas(atlas_sunflower_die_right, atlas_sunflower_die_left);
 
 		loadimage(&img_pea, _T("resources/pea.png"));
-		atlas_pea_break.load_from_file(_T("resources/pea_break_%d. png"), 3);
+		atlas_pea_break.load_from_file(_T("resources/pea_break_%d.png"), 3);
 		atlas_sun.load_from_file(_T("resources/sun_%d.png"), 5);
 		atlas_sun_explode.load_from_file(_T("resources/sun_explode_%d.png"), 5);
 		atlas_sun_ex.load_from_file(_T("resources/sun_ex_%d.png"), 5);

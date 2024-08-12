@@ -8,6 +8,7 @@
 # include "atlas.h"
 # include "resource.h"
 # include "player.h"
+# include "bullet.h"
 
 #pragma comment(lib,"Winmm.lib")
 

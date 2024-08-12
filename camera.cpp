@@ -30,5 +30,5 @@ void Camera::shake(float strength, int duration){
     shaking_strength = strength;
 
     timer_shake.set_wait_time(duration);
-    timer_shake.resart();
+    timer_shake.restart();
 }

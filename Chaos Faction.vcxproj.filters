@@ -19,6 +19,9 @@
     <Filter Include="头文件\player">
       <UniqueIdentifier>{49b026a7-f009-4bb4-a758-74f998c21ec1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\bullet">
+      <UniqueIdentifier>{1c3ecc2c-b05a-4c92-9d63-3a0312b921c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -93,6 +96,21 @@
       <Filter>头文件\player</Filter>
     </ClInclude>
     <ClInclude Include="sunflower_player.h">
+      <Filter>头文件\player</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>头文件\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="pea_bullet.h">
+      <Filter>头文件\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="sun_bullet.h">
+      <Filter>头文件\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="sun_bullet_ex.h">
+      <Filter>头文件\bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="player_id.h">
       <Filter>头文件\player</Filter>
     </ClInclude>
   </ItemGroup>
