@@ -106,7 +106,7 @@ public:
 		bullet_position.y = -bullet_size.y;
 		bullet_velocity.x = 0;
 		bullet_velocity.y = speed_sun_ex;
-
+		
 		bullet->set_position(bullet_position.x, bullet_position.y);
 		bullet->set_velocity(bullet_velocity.x, bullet_velocity.y);
 

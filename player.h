@@ -7,6 +7,7 @@
 # include "platform.h"
 # include "player_id.h"
 # include "bullet.h"
+# include "particle.h"
 
 extern std::vector<Platform> platform_list;
 extern std::vector<Bullet*> bullet_list;
@@ -25,11 +26,45 @@ public:
 
 		timer_invulnerable.set_wait_time(750);
 		timer_invulnerable.set_one_shot(true);
-		timer_invulnerable.set_callback([&]() {is_invulnerable = false; });
+		timer_invulnerable.set_callback([&]() {
+			is_invulnerable = false;
+			timer_invulnerable_blink.pause();
+			});
 
 		timer_invulnerable_blink.set_wait_time(75);
 		timer_invulnerable_blink.set_callback([&]() {is_showing_sketch_frame = !is_showing_sketch_frame; });
 
+
+		timer_run_effect_generation.set_wait_time(75);
+		timer_run_effect_generation.set_callback([&]() {
+			Vector2 particle_position;
+			IMAGE* frame = rs::atlas_run_effect.get_image(0);
+			particle_position.x = position.x + (size.x - frame->getwidth()) / 2;
+			particle_position.y = position.y + size.y - frame->getheight();
+			particle_list.push_back(new Particle(particle_position,&rs::atlas_run_effect,45));
+			});
+
+
+		timer_die_effect_generation.set_wait_time(35);
+		timer_die_effect_generation.set_callback([&]() {
+			Vector2 particle_position;
+			IMAGE* frame = rs::atlas_run_effect.get_image(0);
+			particle_position.x = position.x + (size.x - frame->getwidth()) / 2;
+			particle_position.y = position.y + size.y - frame->getheight();
+			particle_list.push_back(new Particle(particle_position, &rs::atlas_run_effect, 150));
+			});
+
+
+
+		animation_jump_effect.set_atlas(&rs::atlas_jump_effect);
+		animation_jump_effect.set_interval(25);
+		animation_jump_effect.set_loop(false);
+		animation_jump_effect.set_callback([&]() {is_jump_effect_visible = false; });
+
+		animation_land_effect.set_atlas(&rs::atlas_land_effect);
+		animation_land_effect.set_interval(50);
+		animation_land_effect.set_loop(false);
+		animation_land_effect.set_callback([&]() {is_land_effect_visible = false; });
 	}
 
 	~Player() = default;
@@ -49,15 +84,36 @@ public:
 			}
 			else {
 				current_animation = is_facing_right ? &animation_idle_right : &animation_idle_left;
+				timer_run_effect_generation.pause();
 			}
 		}
 
 		current_animation->on_update(delta);
 
+		animation_jump_effect.on_update(delta);
+		animation_land_effect.on_update(delta);
+
 		timer_attack_cd.on_update(delta);
 		timer_invulnerable.on_update(delta);
 		timer_invulnerable_blink.on_update(delta);
+		timer_run_effect_generation.on_update(delta);
 
+
+		if (hp <= 0)
+			timer_die_effect_generation.on_update(delta);
+
+		for (auto it = particle_list.begin(); it != particle_list.end();) {
+			if (!(*it)->check_valid()) {
+				delete (*it);
+				it = particle_list.erase(it);
+			}
+			else it++;
+		}
+
+		for (Particle* particle : particle_list) {
+			particle->on_update(delta);
+		}
+			
 		if (is_showing_sketch_frame && is_invulnerable)
 			ut::sketch_image(current_animation->get_frame(), &img_sketch);
 
@@ -68,9 +124,23 @@ public:
 		if (is_attacking_ex)
 			return;
 		position.x += distance;
+
+		timer_run_effect_generation.resume();
 	}
 
 	virtual void on_draw(const Camera& camera) {
+		if (is_jump_effect_visible)
+			animation_jump_effect.on_draw(camera, position_jump_effect.x, position_jump_effect.y);
+
+		if (is_land_effect_visible)
+			animation_land_effect.on_draw(camera, position_land_effect.x, position_land_effect.y);
+
+
+		for (Particle* particle : particle_list) {
+			particle->on_draw(camera);
+		}
+
+
 		if (hp > 0 && is_showing_sketch_frame && is_invulnerable)
 			ut::putimage_alpha(camera, position.x, position.y, &img_sketch);
 		else
@@ -185,6 +255,13 @@ public:
 	virtual void on_jump() {
 		if (velocity.y != 0 || is_attacking_ex) return;
 		velocity.y += jump_velocity;
+
+		is_jump_effect_visible = true;
+		animation_jump_effect.reset();
+
+		IMAGE* frame = animation_jump_effect.get_frame();
+		position_jump_effect.x = position.x + (size.x - frame->getwidth()) / 2;
+		position_jump_effect.y = position.y + size.y - frame->getheight();
 	}
 
 	virtual void on_attack() = 0;
@@ -202,6 +279,7 @@ public:
 	void make_invulnerable() {
 		is_invulnerable = true;
 		timer_invulnerable.restart();
+		timer_invulnerable_blink.resume();
 	}
 
 	int get_hp() {
@@ -216,9 +294,19 @@ public:
 		return img_avatar;
 	}
 
+	virtual void on_land() {
+		is_land_effect_visible = true;
+		animation_land_effect.reset();
+
+		IMAGE* frame = animation_land_effect.get_frame();
+		position_land_effect.x = position.x + (size.x - frame->getwidth()) / 2;
+		position_land_effect.y = position.y + size.y - frame->getheight();
+	}
+
 protected:
 
 	void move_and_collide(int delta) {
+		float last_frame_velocity = velocity.y;
 		velocity.y += gravity * delta;
 		position = position + velocity * delta;
 		if (velocity.y > 0) {
@@ -233,6 +321,9 @@ protected:
 					if (last_tick_foot_pos_y <= shape.y) {
 						position.y = shape.y - size.y;
 						velocity.y = 0;
+
+						if (last_frame_velocity != 0)
+							on_land();
 						break;
 					}
 				}
@@ -270,6 +361,16 @@ protected:
 	Animation animation_attack_ex_left;
 	Animation animation_attack_ex_right;
 
+
+	Animation animation_jump_effect;
+	Animation animation_land_effect;
+
+	bool is_jump_effect_visible = false;
+	bool is_land_effect_visible = false;
+
+	Vector2 position_jump_effect;
+	Vector2 position_land_effect;
+
 	IMAGE img_sketch;
 
 
@@ -292,4 +393,9 @@ protected:
 	IMAGE* img_avatar = nullptr;
 
 	PlayerID id;
+
+	std::vector<Particle*> particle_list;
+
+	Timer timer_run_effect_generation;
+	Timer timer_die_effect_generation;
 };

@@ -142,6 +142,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="game_scene.h" />
     <ClInclude Include="menu_scene.h" />
+    <ClInclude Include="particle.h" />
     <ClInclude Include="peashooter_player.h" />
     <ClInclude Include="pea_bullet.h" />
     <ClInclude Include="platform.h" />

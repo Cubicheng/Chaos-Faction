@@ -87,11 +87,14 @@ public:
 	}
 
 	void on_update(int delta) {
-		for (int i = 0; i < bullet_list.size(); i++) {
-			if (bullet_list[i]->check_can_remove()) {
-				delete bullet_list[i];
-				bullet_list.erase(bullet_list.begin() + i);
+
+		for (auto it = bullet_list.begin(); it != bullet_list.end();) {
+			if ((*it)->check_can_remove()) {
+				delete (*it);
+				it = bullet_list.erase(it);
 			}
+			else
+				it++;
 		}
 
 		for (Bullet* bullet : bullet_list) {
