@@ -1,6 +1,6 @@
 # include "frame_timer.h"
 
-namespace timer {
+namespace frame_timer {
 	DWORD frame_start_time;
 	DWORD frame_end_time;
 	DWORD frame_time;

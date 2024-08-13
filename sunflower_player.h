@@ -47,6 +47,8 @@ public:
 		size.y = 96;
 		
 		attack_cd = 250;
+
+		img_avatar = &rs::img_avatar_sunflower;
 	}
 
 	~SunflowerPlayer() = default;
@@ -108,6 +110,7 @@ public:
 		bullet->set_position(bullet_position.x, bullet_position.y);
 		bullet->set_velocity(bullet_velocity.x, bullet_velocity.y);
 
+		bullet->set_collide_target(id == PlayerID::P1 ? PlayerID::P2 : PlayerID::P1);
 		bullet->set_callback([&]() {mp += 50; });
 
 		bullet_list.push_back(bullet);

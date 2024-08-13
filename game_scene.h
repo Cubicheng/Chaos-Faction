@@ -7,6 +7,7 @@
 # include "platform.h"
 # include "player.h"
 # include "bullet.h"
+# include "status_bar.h"
 # include <iostream>
 
 extern SceneManager scene_manager;
@@ -77,26 +78,39 @@ public:
 		player_1->set_facing_right(true);
 		player_2->set_position(975, 50);
 		player_2->set_facing_right(false);
+
+		status_bar_1P.set_avatar(player_1->get_img_avatar());
+		status_bar_2P.set_avatar(player_2->get_img_avatar());
+
+		status_bar_1P.set_position(235, 625);
+		status_bar_2P.set_position(675, 625);
 	}
 
 	void on_update(int delta) {
+		for (int i = 0; i < bullet_list.size(); i++) {
+			if (bullet_list[i]->check_can_remove()) {
+				delete bullet_list[i];
+				bullet_list.erase(bullet_list.begin() + i);
+			}
+		}
+
+		for (Bullet* bullet : bullet_list) {
+			bullet->on_update(delta);
+		}
+
 		player_1->on_update(delta);
 		player_2->on_update(delta);
 
 		main_camera.on_update(delta);
 
-		bullet_list.erase(std::remove_if(
+		/*bullet_list.erase(std::remove_if(
 			bullet_list.begin(), bullet_list.end(),
 			[](const Bullet* bullet) {
 				bool deletable = bullet->check_can_remove();
 				if (deletable) delete bullet;
 				return deletable;
 			}),
-			bullet_list.end());
-
-		for (Bullet* bullet : bullet_list) {
-			bullet->on_update(delta);
-		}
+			bullet_list.end());*/
 	}
 
 	void on_draw(const Camera& camera) {
@@ -113,6 +127,15 @@ public:
 		for (Bullet* bullet : bullet_list) {
 			bullet->on_draw(camera);
 		}
+
+		status_bar_1P.set_hp(player_1->get_hp());
+		status_bar_1P.set_mp(player_1->get_mp());
+
+		status_bar_2P.set_hp(player_2->get_hp());
+		status_bar_2P.set_mp(player_2->get_mp());
+
+		status_bar_1P.on_draw();
+		status_bar_2P.on_draw();
 	}
 
 	void on_input(const ExMessage& msg) {
@@ -134,4 +157,7 @@ public:
 private:
 	POINT pos_img_sky = { 0 };
 	POINT pos_img_hills = { 0 };
+
+	StatusBar status_bar_1P;
+	StatusBar status_bar_2P;
 };

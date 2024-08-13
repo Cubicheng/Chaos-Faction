@@ -152,6 +152,7 @@
     <ClInclude Include="scene_manager.h" />
     <ClInclude Include="selector_scene.h" />
     <ClInclude Include="frame_timer.h" />
+    <ClInclude Include="status_bar.h" />
     <ClInclude Include="sunflower_player.h" />
     <ClInclude Include="sun_bullet.h" />
     <ClInclude Include="sun_bullet_ex.h" />

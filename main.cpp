@@ -46,7 +46,7 @@ void loop() {
 
 	while (true) {
 
-		timer::frame_start_time = GetTickCount();
+		frame_timer::frame_start_time = GetTickCount();
 
 		while (peekmessage(&msg)) {
 			scene_manager.on_input(msg);
@@ -66,7 +66,7 @@ void loop() {
 
 		FlushBatchDraw();
 
-		timer::frame_sleep();
+		frame_timer::frame_sleep();
 	}
 
 }

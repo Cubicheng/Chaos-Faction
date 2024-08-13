@@ -21,6 +21,15 @@ public:
 		timer_attack_cd.set_wait_time(attack_cd);
 		timer_attack_cd.set_one_shot(true);
 		timer_attack_cd.set_callback([&]() {can_attack = true; });
+
+
+		timer_invulnerable.set_wait_time(750);
+		timer_invulnerable.set_one_shot(true);
+		timer_invulnerable.set_callback([&]() {is_invulnerable = false; });
+
+		timer_invulnerable_blink.set_wait_time(75);
+		timer_invulnerable_blink.set_callback([&]() {is_showing_sketch_frame = !is_showing_sketch_frame; });
+
 	}
 
 	~Player() = default;
@@ -45,10 +54,14 @@ public:
 
 		current_animation->on_update(delta);
 
-		move_and_collide(delta);
-
 		timer_attack_cd.on_update(delta);
+		timer_invulnerable.on_update(delta);
+		timer_invulnerable_blink.on_update(delta);
 
+		if (is_showing_sketch_frame && is_invulnerable)
+			ut::sketch_image(current_animation->get_frame(), &img_sketch);
+
+		move_and_collide(delta);
 	}
 
 	virtual void on_run(float distance) {
@@ -58,7 +71,12 @@ public:
 	}
 
 	virtual void on_draw(const Camera& camera) {
-		current_animation->on_draw(camera, (int)position.x, (int)position.y);
+		if (hp > 0 && is_showing_sketch_frame && is_invulnerable)
+			ut::putimage_alpha(camera, position.x, position.y, &img_sketch);
+		else
+			current_animation->on_draw(camera, (int)position.x, (int)position.y);
+
+
 		if (is_debug) {
 			setlinecolor(RGB(255, 0, 0));
 			ut::draw_line(camera, position.x, position.y, position.x+size.x, position.y);
@@ -181,6 +199,23 @@ public:
 		return size;
 	}
 
+	void make_invulnerable() {
+		is_invulnerable = true;
+		timer_invulnerable.restart();
+	}
+
+	int get_hp() {
+		return hp;
+	}
+
+	int get_mp() {
+		return mp;
+	}
+
+	IMAGE* get_img_avatar() {
+		return img_avatar;
+	}
+
 protected:
 
 	void move_and_collide(int delta) {
@@ -204,10 +239,12 @@ protected:
 			}
 		}
 
+		if (is_invulnerable) return;
 		for (Bullet* bullet : bullet_list) {
 			if (!bullet->get_valid() || bullet->get_collide_target() != id)
-				return;
+				continue;
 			if (bullet->check_collision(position, size)) {
+				make_invulnerable();
 				bullet->set_valid(false);
 				bullet->on_collide();
 				hp -= bullet->get_damage();
@@ -233,6 +270,8 @@ protected:
 	Animation animation_attack_ex_left;
 	Animation animation_attack_ex_right;
 
+	IMAGE img_sketch;
+
 
 	Animation* current_animation = nullptr;
 
@@ -241,9 +280,16 @@ protected:
 	bool is_facing_right = true;
 	bool is_attacking_ex = false;
 
+	bool is_invulnerable = false;
+	bool is_showing_sketch_frame = false;
+	Timer timer_invulnerable;
+	Timer timer_invulnerable_blink;
+
 	int attack_cd = 500;
 	bool can_attack = true;
 	Timer timer_attack_cd;
+
+	IMAGE* img_avatar = nullptr;
 
 	PlayerID id;
 };

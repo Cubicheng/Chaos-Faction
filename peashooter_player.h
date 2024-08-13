@@ -34,6 +34,8 @@ public:
 		timer_spwan_pea_ex.set_callback([&]() {spawn_pea_bullet(speed_pea_ex); });
 
 		attack_cd = 100;
+
+		img_avatar = &rs::img_avatar_peashooter;
 	}
 	~PeashooterPlayer() = default;
 

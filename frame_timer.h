@@ -2,7 +2,7 @@
 
 # include "graphics.h"
 
-namespace timer {
+namespace frame_timer {
 	extern DWORD frame_start_time;
 	extern DWORD frame_end_time;
 	extern DWORD frame_time;
