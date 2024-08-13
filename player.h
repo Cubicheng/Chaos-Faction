@@ -55,6 +55,10 @@ public:
 			});
 
 
+		timer_cursor_visibility.set_wait_time(2500);
+		timer_cursor_visibility.set_one_shot(true);
+		timer_cursor_visibility.set_callback([&]() {is_cursor_visibility = false; });
+
 
 		animation_jump_effect.set_atlas(&rs::atlas_jump_effect);
 		animation_jump_effect.set_interval(25);
@@ -88,14 +92,24 @@ public:
 			}
 		}
 
+		if (hp <= 0)
+			current_animation = last_hurt_direction.x > 0 ? &animation_die_left : &animation_die_right;
+
 		current_animation->on_update(delta);
 
 		animation_jump_effect.on_update(delta);
 		animation_land_effect.on_update(delta);
 
 		timer_attack_cd.on_update(delta);
-		timer_invulnerable.on_update(delta);
-		timer_invulnerable_blink.on_update(delta);
+
+		if (is_cursor_visibility)
+			timer_cursor_visibility.on_update(delta);
+
+		if (is_invulnerable) {
+			timer_invulnerable.on_update(delta);
+			timer_invulnerable_blink.on_update(delta);
+		}
+
 		timer_run_effect_generation.on_update(delta);
 
 
@@ -116,6 +130,9 @@ public:
 			
 		if (is_showing_sketch_frame && is_invulnerable)
 			ut::sketch_image(current_animation->get_frame(), &img_sketch);
+
+		if (check_is_fall_out())
+			hp = 0;
 
 		move_and_collide(delta);
 	}
@@ -145,6 +162,22 @@ public:
 			ut::putimage_alpha(camera, position.x, position.y, &img_sketch);
 		else
 			current_animation->on_draw(camera, (int)position.x, (int)position.y);
+
+		if (is_cursor_visibility) {
+			switch (id) {
+			case PlayerID::P1:
+				ut::putimage_alpha(camera,
+					position.x + (size.x - rs::img_1P_cursor.getwidth()) / 2,
+					position.y - rs::img_1P_cursor.getheight(),&rs::img_1P_cursor);
+				break;
+			case PlayerID::P2:
+				ut::putimage_alpha(camera,
+					position.x + (size.x - rs::img_2P_cursor.getwidth()) / 2,
+					position.y - rs::img_2P_cursor.getheight(), &rs::img_2P_cursor);
+				break;
+			}
+
+		}
 
 
 		if (is_debug) {
@@ -303,12 +336,21 @@ public:
 		position_land_effect.y = position.y + size.y - frame->getheight();
 	}
 
+	bool check_is_fall_out() {
+		return position.y > getheight();
+	}
+
 protected:
 
 	void move_and_collide(int delta) {
+
 		float last_frame_velocity = velocity.y;
+
 		velocity.y += gravity * delta;
 		position = position + velocity * delta;
+
+		if (hp <= 0) return;
+
 		if (velocity.y > 0) {
 			for (const Platform& platform : platform_list) {
 				const Platform::CollisionShape& shape = platform.collision_shape;
@@ -339,6 +381,11 @@ protected:
 				bullet->set_valid(false);
 				bullet->on_collide();
 				hp -= bullet->get_damage();
+				last_hurt_direction = position - bullet->get_position();
+				if (hp <= 0) {
+					velocity.x = last_hurt_direction.x > 0 ? 0.35f : -0.35f;
+					velocity.y = -1.0f;
+				}
 			}
 		}
 	}
@@ -360,7 +407,8 @@ protected:
 	Animation animation_run_right;
 	Animation animation_attack_ex_left;
 	Animation animation_attack_ex_right;
-
+	Animation animation_die_left;
+	Animation animation_die_right;
 
 	Animation animation_jump_effect;
 	Animation animation_land_effect;
@@ -398,4 +446,9 @@ protected:
 
 	Timer timer_run_effect_generation;
 	Timer timer_die_effect_generation;
+
+	bool is_cursor_visibility = true;
+	Timer timer_cursor_visibility;
+
+	Vector2 last_hurt_direction;
 };

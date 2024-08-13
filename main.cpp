@@ -12,7 +12,7 @@
 
 #pragma comment(lib,"Winmm.lib")
 
-bool is_debug = true;
+bool is_debug = false;
 
 Player* player_1 = nullptr;
 Player* player_2 = nullptr;
@@ -30,7 +30,7 @@ void init() {
 	selector_scene = new SelectorScene();
 	rs::load_game_resources();
 
-	initgraph(1280, 720, EX_SHOWCONSOLE);
+	initgraph(1280, 720);
 
 	settextstyle(28, 0, _T("IPix"));
 	setbkmode(TRANSPARENT);

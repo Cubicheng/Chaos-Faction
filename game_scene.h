@@ -31,8 +31,32 @@ public:
 	}
 
 	void on_enter() {
-		mciSendString(_T("pause bgm_menu"), NULL, 0, NULL);
+
 		mciSendString(_T("play bgm_game repeat from 0"), NULL, 0, NULL);
+
+		is_game_over = false;
+		is_slide_out_started = false;
+
+		pos_img_winner_bar.x = -rs::img_winner_bar.getwidth();
+		pos_img_winner_bar.y = (getheight() - rs::img_winner_bar.getheight()) / 2;
+		pos_x_img_winner_bar_dst = (getwidth() - rs::img_winner_bar.getwidth()) / 2;
+		
+		pos_img_winner_text.x = -rs::img_1P_winner.getwidth();
+		pos_img_winner_text.y = (getheight() - rs::img_1P_winner.getheight()) / 2;
+		pos_x_img_winner_text_dst = (getwidth() - rs::img_1P_winner.getwidth()) / 2;
+
+
+		timer_winner_slide_in.restart();
+		timer_winner_slide_in.set_wait_time(2500);
+		timer_winner_slide_in.set_one_shot(true);
+		timer_winner_slide_in.set_callback([&]() {is_slide_out_started = true; });
+
+
+		timer_winner_slide_out.restart();
+		timer_winner_slide_out.set_wait_time(1000);
+		timer_winner_slide_out.set_one_shot(true);
+		timer_winner_slide_out.set_callback([&]() {scene_manager.switch_to(SceneManager::SceneType::Menu); });
+
 
 		pos_img_sky.x = (getwidth() - rs::img_sky.getwidth()) / 2;
 		pos_img_sky.y = (getheight() - rs::img_sky.getheight()) / 2;
@@ -106,14 +130,27 @@ public:
 
 		main_camera.on_update(delta);
 
-		/*bullet_list.erase(std::remove_if(
-			bullet_list.begin(), bullet_list.end(),
-			[](const Bullet* bullet) {
-				bool deletable = bullet->check_can_remove();
-				if (deletable) delete bullet;
-				return deletable;
-			}),
-			bullet_list.end());*/
+		if (!is_game_over && (player_1->get_hp() <= 0 || player_2->get_hp() <= 0)) {
+			mciSendString(_T("stop bgm_game"), NULL, 0, NULL);
+			mciSendString(_T("play ui_win from 0"), NULL, 0, NULL);
+			is_game_over = true;
+		}
+
+
+		if (is_game_over) {
+			pos_img_winner_bar.x += (int)(speed_winner_bar * delta);
+			pos_img_winner_text.x += (int)(speed_winner_text * delta);
+
+			if (!is_slide_out_started) {
+				timer_winner_slide_in.on_update(delta);
+				if (pos_img_winner_bar.x > pos_x_img_winner_bar_dst)
+					pos_img_winner_bar.x = pos_x_img_winner_bar_dst;
+				if (pos_img_winner_text.x > pos_x_img_winner_text_dst)
+					pos_img_winner_text.x = pos_x_img_winner_text_dst;
+			}
+			else
+				timer_winner_slide_out.on_update(delta);
+		}
 	}
 
 	void on_draw(const Camera& camera) {
@@ -137,8 +174,15 @@ public:
 		status_bar_2P.set_hp(player_2->get_hp());
 		status_bar_2P.set_mp(player_2->get_mp());
 
-		status_bar_1P.on_draw();
-		status_bar_2P.on_draw();
+		if (!is_game_over) {
+			status_bar_1P.on_draw();
+			status_bar_2P.on_draw();
+		}
+		else {
+			ut::putimage_alpha(pos_img_winner_bar.x, pos_img_winner_bar.y, &rs::img_winner_bar);
+			ut::putimage_alpha(pos_img_winner_text.x, pos_img_winner_text.y,
+				player_1->get_hp() > 0 ? &rs::img_1P_winner : &rs::img_2P_winner);
+		}
 	}
 
 	void on_input(const ExMessage& msg) {
@@ -155,7 +199,13 @@ public:
 	}
 
 	void on_exit() {
+		delete player_1;
+		player_1 = nullptr;
+		delete player_2;
+		player_2 = nullptr;
 
+		bullet_list.clear();
+		main_camera.reset();
 	}
 private:
 	POINT pos_img_sky = { 0 };
@@ -163,4 +213,16 @@ private:
 
 	StatusBar status_bar_1P;
 	StatusBar status_bar_2P;
+
+	const float speed_winner_bar = 3.0f;
+	const float speed_winner_text = 1.5f;
+
+	bool is_game_over = false;
+	POINT pos_img_winner_bar = { 0 };
+	POINT pos_img_winner_text = { 0 };
+	int pos_x_img_winner_bar_dst = 0;
+	int pos_x_img_winner_text_dst = 0;
+	Timer timer_winner_slide_in;
+	Timer timer_winner_slide_out;
+	bool is_slide_out_started = false;
 };

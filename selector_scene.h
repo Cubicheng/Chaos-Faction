@@ -24,6 +24,9 @@ public:
 
 	void on_enter() {
 
+		player_type_1 = PlayerType::Peashooter;
+		player_type_2 = PlayerType::Sunflower;
+
 		animation_peashooter.set_atlas(&rs::atlas_peashooter_idle_right);
 		animation_sunflower.set_atlas(&rs::atlas_sunflower_idle_right);
 		animation_peashooter.set_interval(100);
@@ -254,6 +257,8 @@ public:
 		}
 
 		player_2->set_id(PlayerID::P2);
+
+		mciSendString(_T("stop bgm_menu"), NULL, 0, NULL);
 	}
 
 	void outtextxy_shaded(int x, int y, LPCTSTR str) {
