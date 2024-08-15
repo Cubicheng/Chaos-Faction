@@ -1,1 +1,1 @@
-# 单主机双人游戏：植物明星大乱斗
+# A two-player game : plant vs plant - Chaos Faction
