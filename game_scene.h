@@ -189,13 +189,13 @@ public:
 		player_1->on_input(msg);
 		player_2->on_input(msg);
 
-		switch (msg.message) {
+		/*switch (msg.message) {
 		case WM_KEYDOWN:
 			if (msg.vkcode == 0x51) {
 				is_debug = !is_debug;
 			}
 			break;
-		}
+		}*/
 	}
 
 	void on_exit() {
